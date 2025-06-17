@@ -38,7 +38,7 @@ jobs:
         while read file; do
           if [ -f "$file" ]; then
             echo "Uploading $file"
-            aws s3 cp "$file" "s3://www.fremitech.com/www.fremitech.com/$file" --acl public-read
+            aws s3 cp "$file" "s3://www.fremitech.com/www.fremitech.com/$file"
           else
             echo "Skipping $file (not a regular file)"
           fi
