@@ -32,6 +32,6 @@ jobs:
       run: |
         while read file; do
           if [ -f "$file" ]; then
-            aws s3 cp "$file" "s3://your-bucket-name/$file" --acl public-read
+            aws s3 cp "$file" "s3://www.fremitech.com/www.fremitech.com/$file" --acl public-read
           fi
         done < changed_files.txt
