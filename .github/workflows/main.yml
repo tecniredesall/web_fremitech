@@ -23,23 +23,21 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
 
-    - name: Get list of changed files
-      id: changed-files
+    - name: Get changed and deleted files
       run: |
-        # Si no hay un commit anterior (primer push), usa todos los archivos
-        if git rev-parse HEAD~1 >/dev/null 2>&1; then
-          git diff --name-only HEAD~1 HEAD > changed_files.txt
-        else
-          git ls-files > changed_files.txt
-        fi
+        git diff --name-only HEAD~1 HEAD > changed_files.txt
+        git diff --diff-filter=D --name-only HEAD~1 HEAD > deleted_files.txt
 
     - name: Upload changed files to S3
       run: |
         while read file; do
           if [ -f "$file" ]; then
-            echo "Uploading $file"
             aws s3 cp "$file" "s3://www.fremitech.com/www.fremitech.com/$file"
-          else
-            echo "Skipping $file (not a regular file)"
           fi
         done < changed_files.txt
+        
+    - name: Delete removed files from S3
+      run: |
+        while read file; do
+          aws s3 rm "s3://www.fremitech.com/www.fremitech.com/$file"
+        done < deleted_files.txt
